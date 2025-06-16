@@ -1,0 +1,185 @@
+{
+  "document_type": "acceptance_checklist",
+  "version": "1.0.0",
+  "updated_at": "2025-06-16",
+  "maintained_by": "NuWa",
+  "purpose": "Text2SQL MVP-0 Week-2 集成测试与角色分配清单",
+  
+  "test_cases": [
+    {
+      "id": "T-01",
+      "category": "Happy Path",
+      "description": "基础NL转SQL测试",
+      "steps": [
+        "输入自然语言: '统计去年销售额'",
+        "SchemaSage生成SQL",
+        "执行SQL查询"
+      ],
+      "expected_results": {
+        "correctness": "SQL返回正确表格",
+        "performance": "延迟 < 6s",
+        "status": "success"
+      },
+      "mcp_tools": ["memory", "fs"],
+      "roles": ["SchemaSage", "ExecAgent"],
+      "status": "pending"
+    },
+    {
+      "id": "T-02",
+      "category": "记忆复用",
+      "description": "缓存命中测试",
+      "steps": [
+        "重复T-01的查询"
+      ],
+      "expected_results": {
+        "cache_hit": true,
+        "performance": "延迟 < 3s",
+        "memory_key": "last_sql"
+      },
+      "mcp_tools": ["memory.recall"],
+      "roles": ["NuWa"],
+      "status": "pending"
+    },
+    {
+      "id": "T-03",
+      "category": "安全拦截",
+      "description": "危险操作拦截测试",
+      "steps": [
+        "输入: '删除用户表'"
+      ],
+      "expected_results": {
+        "blocked": true,
+        "message": "友好的安全提示",
+        "logged": true
+      },
+      "mcp_tools": ["memory", "time"],
+      "roles": ["SQLGuardian"],
+      "status": "pending"
+    },
+    {
+      "id": "T-04",
+      "category": "自修复循环",
+      "description": "错误自动修复测试",
+      "steps": [
+        "故意输入错误列名",
+        "触发错误",
+        "Debugger介入修复"
+      ],
+      "expected_results": {
+        "first_attempt": "failure",
+        "auto_fix": true,
+        "final_status": "success"
+      },
+      "mcp_tools": ["fetch", "fs", "memory"],
+      "roles": ["Debugger"],
+      "status": "pending"
+    },
+    {
+      "id": "T-05",
+      "category": "多角色协同",
+      "description": "Schema变更适应测试",
+      "steps": [
+        "模拟Schema变更",
+        "触发向量更新",
+        "验证新查询"
+      ],
+      "expected_results": {
+        "vector_refresh": true,
+        "new_column_accessible": true
+      },
+      "mcp_tools": ["fs", "memory"],
+      "roles": ["SchemaSage", "NuWa"],
+      "status": "pending"
+    },
+    {
+      "id": "T-06",
+      "category": "冷启动持久化",
+      "description": "重启后记忆保持测试",
+      "steps": [
+        "重启所有Pods",
+        "运行T-01查询"
+      ],
+      "expected_results": {
+        "memory_persistent": true,
+        "performance_baseline": true
+      },
+      "mcp_tools": ["memory.recall"],
+      "roles": ["MetricsWatcher"],
+      "status": "pending"
+    },
+    {
+      "id": "T-07",
+      "category": "观测验证",
+      "description": "性能压力测试",
+      "steps": [
+        "100并发请求",
+        "监控指标收集"
+      ],
+      "expected_results": {
+        "metrics_visible": true,
+        "error_rate": "< 1%",
+        "prometheus_data": true
+      },
+      "mcp_tools": ["fetch"],
+      "roles": ["MetricsWatcher"],
+      "status": "pending"
+    }
+  ],
+  
+  "role_matrix": {
+    "task_allocation": {
+      "需求拆解计划": {
+        "NuWa": "主导",
+        "others": null
+      },
+      "Schema向量化": {
+        "NuWa": "调度",
+        "SchemaSage": "执行"
+      },
+      "NL转SQL生成": {
+        "NuWa": "调度",
+        "QueryScribe": "生成"
+      },
+      "SQL安全审查": {
+        "NuWa": "调度",
+        "SQLGuardian": "审核"
+      },
+      "执行与结果返回": {
+        "NuWa": "调度",
+        "ExecAgent": "执行"
+      },
+      "错误诊断修复": {
+        "NuWa": "触发循环",
+        "Debugger": "诊断修补"
+      },
+      "记忆读写": {
+        "all_roles": "均可访问"
+      },
+      "性能监控": {
+        "MetricsWatcher": "收集"
+      }
+    }
+  },
+  
+  "architecture": {
+    "runtime_components": {
+      "nuwa_client": "dbgpt-worker容器中运行",
+      "promptx_server": "Node 18 MCP服务",
+      "memory_store": "Redis/文件KV",
+      "observability": "Prometheus + Grafana"
+    },
+    "data_flow": [
+      "NuWa Client -> PromptX MCP Server",
+      "PromptX -> Memory Store",
+      "Claude LLM Proxy -> DB-GPT Core",
+      "All Components -> Prometheus"
+    ]
+  },
+  
+  "usage_guide": {
+    "recall_checklist": "memory.recall('week2_acceptance_checklist')",
+    "trigger_test": "role.execute('ExecAgent', 'run_test', 'T-04')",
+    "view_architecture": "memory.recall('promptx_arch_diagram')",
+    "update_status": "memory.update('test_status', {'T-01': 'passed'})"
+  }
+}

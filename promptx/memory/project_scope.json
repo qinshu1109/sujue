@@ -1,0 +1,135 @@
+{
+  "project_name": "Text2SQL MVP-0",
+  "version": "v0.1",
+  "created_at": "2025-06-16",
+  "duration": "6 weeks",
+  "north_star": {
+    "goal": "在6周内交付一个可自修复的Text-to-SQL系统",
+    "key_features": [
+      "完全运行于Podman容器化环境",
+      "核心框架DB-GPT (AWEL)",
+      "Claude 3负责SQL生成与自诊断",
+      "自带NuWa智能项目经理",
+      "覆盖Schema RAG → AST验证 → 执行 → 自修复全链路",
+      "关键日志、性能指标、成本全部可观测"
+    ]
+  },
+  "milestones": {
+    "W1": {
+      "deliverables": [
+        "Podman环境基线",
+        "私有Registry"
+      ],
+      "nuwa_actions": [
+        "建立project_scope记忆",
+        "生成SchemaSage角色"
+      ],
+      "status": "completed"
+    },
+    "W2": {
+      "deliverables": [
+        "DB-GPT + Claude单轮NL→SQL"
+      ],
+      "nuwa_actions": [
+        "调度SQLGuardian",
+        "记录last_sql"
+      ],
+      "status": "completed",
+      "acceptance_tests": {
+        "checklist": "week2-acceptance-checklist.json",
+        "test_runner": "week2-test-runner.py",
+        "test_cases": [
+          "T-01",
+          "T-02",
+          "T-03",
+          "T-04",
+          "T-05",
+          "T-06",
+          "T-07"
+        ]
+      }
+    },
+    "W3": {
+      "deliverables": [
+        "Schema RAG & AST Validator完成"
+      ],
+      "nuwa_actions": [
+        "写入db_schema_vec",
+        "触发自修复闭环测试"
+      ],
+      "status": "in_progress"
+    },
+    "W4": {
+      "deliverables": [
+        "Prometheus + Grafana可观测"
+      ],
+      "nuwa_actions": [
+        "汇总token/延迟指标入memory"
+      ],
+      "status": "pending"
+    },
+    "W5": {
+      "deliverables": [
+        "前端SQL编辑 & CSV导出"
+      ],
+      "nuwa_actions": [
+        "创建UXPolisher角色",
+        "GUI回归测试"
+      ],
+      "status": "pending"
+    },
+    "W6": {
+      "deliverables": [
+        "v0.1冻结",
+        "部署文档+Runbook"
+      ],
+      "nuwa_actions": [
+        "生成发布纪要",
+        "归档fixes_history"
+      ],
+      "status": "pending"
+    }
+  },
+  "acceptance_criteria": {
+    "sql_success_rate": "≥ 85%",
+    "auto_fix_rate": "≥ 70%",
+    "avg_latency": "< 6s",
+    "tool_call_rt": "< 1s",
+    "safety": "危险写操作被SQLGuardian拦截"
+  },
+  "architecture": {
+    "pods": [
+      "app",
+      "llm-proxy",
+      "db",
+      "vec",
+      "observability"
+    ],
+    "agents": [
+      "NuWa",
+      "SchemaSage",
+      "SQLGuardian",
+      "Debugger",
+      "QueryScribe",
+      "MetricsWatcher"
+    ],
+    "workflow": "User → NuWa → SchemaSage → SQLGuardian → Exec → Debugger (on_error)"
+  },
+  "week2_progress": {
+    "completed_tasks": [
+      "角色管理体系建立",
+      "验收测试清单创建",
+      "测试执行框架开发"
+    ],
+    "ready_for_testing": true,
+    "test_execution_command": "python3 ~/text2sql-mvp0/scripts/week2-test-runner.py"
+  },
+  "phase_gate_status": {
+    "decision": "conditional_pass",
+    "blocking_items": [
+      "deployment_not_ready"
+    ],
+    "review_date": "2025-06-16T20:56:35.484580"
+  },
+  "current_stage": "W3"
+}

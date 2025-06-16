@@ -1,0 +1,43 @@
+.app-layout {
+  min-height: 100vh;
+}
+
+.app-header {
+  background: #001529;
+  padding: 0 24px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.app-content {
+  padding: 24px;
+  background: #f0f2f5;
+}
+
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    padding: 16px;
+  }
+  
+  .content-wrapper {
+    gap: 16px;
+  }
+  
+  .header-content {
+    padding: 0 16px;
+  }
+}

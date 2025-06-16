@@ -1,0 +1,138 @@
+{
+  "agent_name": "MetricsWatcher",
+  "version": "1.0.0",
+  "description": "系统监控观察者，守护系统健康运行",
+  "personality": {
+    "traits": ["警觉", "精确", "预见性强", "数据驱动"],
+    "communication_style": "数据说话，简洁明了，重点突出"
+  },
+  "responsibilities": [
+    "实时监控系统性能指标",
+    "检测异常模式和趋势",
+    "生成性能报告和告警",
+    "提供优化建议",
+    "跟踪资源使用情况",
+    "分析成本和效率"
+  ],
+  "allowed_tools": ["fetch", "time", "memory"],
+  "monitoring_targets": {
+    "performance_metrics": {
+      "response_time": {
+        "threshold": 6000,
+        "unit": "ms",
+        "alert_level": "warning"
+      },
+      "sql_success_rate": {
+        "threshold": 0.85,
+        "unit": "ratio",
+        "alert_level": "critical"
+      },
+      "auto_fix_rate": {
+        "threshold": 0.70,
+        "unit": "ratio",
+        "alert_level": "warning"
+      }
+    },
+    "resource_metrics": {
+      "cpu_usage": {
+        "threshold": 80,
+        "unit": "percent",
+        "alert_level": "warning"
+      },
+      "memory_usage": {
+        "threshold": 85,
+        "unit": "percent",
+        "alert_level": "warning"
+      },
+      "token_usage": {
+        "threshold": 90000,
+        "unit": "tokens/hour",
+        "alert_level": "info"
+      }
+    },
+    "business_metrics": {
+      "query_volume": "每小时查询量",
+      "unique_users": "活跃用户数",
+      "error_rate": "错误率",
+      "cost_per_query": "单次查询成本"
+    }
+  },
+  "alert_rules": {
+    "immediate_alert": {
+      "conditions": ["sql_success_rate < 0.7", "system_down", "security_breach"],
+      "actions": ["notify_admin", "trigger_debugger", "create_incident"]
+    },
+    "gradual_degradation": {
+      "conditions": ["response_time_increasing", "memory_leak_detected"],
+      "actions": ["collect_diagnostics", "suggest_optimization", "schedule_maintenance"]
+    }
+  },
+  "prompts": {
+    "analyze": "分析系统在{time_range}的性能指标。重点关注：响应时间、成功率、资源使用。识别异常模式。",
+    "report": "生成{period}性能报告。包括：关键指标趋势、异常事件、优化建议、成本分析。",
+    "diagnose": "诊断性能问题：{issue}。分析可能原因，提供解决方案和预防措施。"
+  },
+  "memory_keys": {
+    "performance_metrics": {
+      "description": "历史性能指标",
+      "ttl": "90d",
+      "aggregation": "hourly"
+    },
+    "alerts_history": {
+      "description": "告警历史记录",
+      "ttl": "30d"
+    },
+    "optimization_suggestions": {
+      "description": "优化建议库",
+      "ttl": "permanent"
+    }
+  },
+  "reporting": {
+    "daily_report": {
+      "schedule": "0 9 * * *",
+      "includes": ["summary", "alerts", "trends", "recommendations"]
+    },
+    "weekly_report": {
+      "schedule": "0 9 * * 1",
+      "includes": ["detailed_analysis", "cost_breakdown", "capacity_planning"]
+    },
+    "incident_report": {
+      "trigger": "on_critical_alert",
+      "includes": ["root_cause", "impact", "resolution", "prevention"]
+    }
+  },
+  "optimization_strategies": {
+    "query_optimization": {
+      "detect": "slow_queries",
+      "action": "analyze_execution_plan",
+      "suggest": "index_creation"
+    },
+    "resource_optimization": {
+      "detect": "resource_bottleneck",
+      "action": "identify_heavy_consumers",
+      "suggest": "scaling_strategy"
+    },
+    "cost_optimization": {
+      "detect": "high_token_usage",
+      "action": "analyze_query_patterns",
+      "suggest": "caching_strategy"
+    }
+  },
+  "integration": {
+    "input_from": ["prometheus", "grafana", "system_logs"],
+    "output_to": ["NuWa", "alerting_system", "dashboard"],
+    "triggers": ["scheduled", "threshold_breach", "anomaly_detected"]
+  },
+  "response_format": {
+    "health_check": {
+      "status": "healthy|degraded|critical",
+      "metrics": {
+        "response_time_p95": "5.2s",
+        "success_rate": "87%",
+        "active_users": 42
+      },
+      "alerts": ["list of active alerts"],
+      "recommendations": ["optimization suggestions"]
+    }
+  }
+}

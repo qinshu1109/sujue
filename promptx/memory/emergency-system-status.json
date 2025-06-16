@@ -1,0 +1,98 @@
+{
+  "system_name": "Week-2紧急执行系统",
+  "version": "1.0.0",
+  "created_at": "2025-06-16T20:00:00",
+  "maintained_by": "NuWa",
+  "status": "ready",
+  
+  "components": {
+    "emergency_executor": {
+      "path": "scripts/emergency-executor.sh",
+      "status": "ready",
+      "description": "一键执行所有修复任务"
+    },
+    "auto_monitor": {
+      "path": "scripts/auto-monitor.sh",
+      "status": "ready",
+      "description": "每6小时自动监控和修复"
+    },
+    "status_tracker": {
+      "path": "scripts/blocker-resolution-status.py",
+      "status": "ready",
+      "description": "实时追踪解决进度"
+    },
+    "execution_guide": {
+      "path": "scripts/emergency-execution-guide.md",
+      "status": "ready",
+      "description": "详细执行指南"
+    },
+    "system_overview": {
+      "path": "docs/week2-emergency-system-overview.md",
+      "status": "ready",
+      "description": "系统概览文档"
+    }
+  },
+  
+  "execution_timeline": {
+    "start_time": "2025-06-16T20:00:00",
+    "end_time": "2025-06-18T20:00:00",
+    "total_hours": 48,
+    "checkpoints": {
+      "6h": {
+        "time": "2025-06-17T02:00:00",
+        "expected": "B-1和B-2脚本执行完成"
+      },
+      "18h": {
+        "time": "2025-06-17T14:00:00",
+        "expected": "B-1和B-2必须resolved",
+        "alert_level": "red"
+      },
+      "36h": {
+        "time": "2025-06-18T08:00:00",
+        "expected": "测试通过率≥85%",
+        "alert_level": "yellow"
+      },
+      "48h": {
+        "time": "2025-06-18T20:00:00",
+        "expected": "所有阻塞resolved，进入W3",
+        "alert_level": "critical"
+      }
+    }
+  },
+  
+  "blockers_status": {
+    "B-1": {
+      "name": "系统部署验证",
+      "status": "pending",
+      "assigned_to": "FrontEndBot",
+      "deadline": "2025-06-17T02:00:00"
+    },
+    "B-2": {
+      "name": "验收测试执行",
+      "status": "pending",
+      "assigned_to": "SchemaSage",
+      "deadline": "2025-06-17T02:00:00"
+    },
+    "B-3": {
+      "name": "可观测性数据流",
+      "status": "pending",
+      "assigned_to": "ExporterGuru",
+      "deadline": "2025-06-17T14:00:00"
+    }
+  },
+  
+  "quick_commands": {
+    "execute_all": "cd ~/text2sql-mvp0 && ./scripts/emergency-executor.sh",
+    "start_monitor": "./scripts/auto-monitor.sh --daemon &",
+    "check_status": "python3 ./scripts/blocker-resolution-status.py",
+    "view_logs": "tail -f logs/emergency-execution.log"
+  },
+  
+  "success_criteria": {
+    "containers": "5/5 healthy",
+    "test_pass_rate": "≥95%",
+    "monitoring": "Grafana无数据空洞"
+  },
+  
+  "next_action": "执行 emergency-executor.sh 开始48小时冲刺"
+}

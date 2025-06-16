@@ -1,0 +1,63 @@
+name: Phase Gate CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  phase-gate-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-test.txt
+        
+    - name: Setup test environment
+      run: |
+        python scripts/inject-test-data.py
+        
+    - name: Run acceptance tests
+      run: |
+        python scripts/week2-test-runner.py --ci-mode
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results
+        path: |
+          logs/week2_test_report.json
+          docs/reports/test-report.html
+          
+    - name: Check test results
+      run: |
+        python scripts/phase-gate-executor.py --check-only
+        
+    - name: Comment PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('logs/week2_test_report.json', 'utf8'));
+          const passRate = report.summary.pass_rate;
+          const status = parseFloat(passRate) >= 85 ? '✅ Passed' : '❌ Failed';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `## Phase Gate Test Results\n\n${status}\n\nPass Rate: ${passRate}\n\nSee artifacts for detailed report.`
+          });

@@ -1,0 +1,92 @@
+{
+  "document_type": "week2_adjustment_plan",
+  "version": "1.0.0",
+  "created_at": "2025-06-16T18:00:00",
+  "maintained_by": "NuWa",
+  "current_progress": "40%",
+  
+  "priority_adjustment": {
+    "immediate": [
+      {
+        "task": "执行B-1部署修复脚本",
+        "command": "./scripts/fix-deployment.sh",
+        "responsible": "FrontEndBot",
+        "deadline": "+6h"
+      },
+      {
+        "task": "执行B-2测试数据注入",
+        "command": "python3 ./scripts/inject-test-data.py",
+        "responsible": "SchemaSage",
+        "deadline": "+6h"
+      }
+    ],
+    "parallel": [
+      {
+        "task": "部署MCP Exporter",
+        "responsible": "ExporterGuru",
+        "deadline": "+12h"
+      },
+      {
+        "task": "更新Grafana配置",
+        "responsible": "ExporterGuru",
+        "deadline": "+12h"
+      }
+    ],
+    "sequential": [
+      {
+        "task": "运行完整测试套件",
+        "command": "python3 ./scripts/week2-test-runner.py --all",
+        "responsible": "CIOrchestrator",
+        "deadline": "+18h"
+      },
+      {
+        "task": "触发CI Pipeline",
+        "command": "git tag week2-e2e && git push origin week2-e2e",
+        "responsible": "CIOrchestrator",
+        "deadline": "+24h"
+      }
+    ]
+  },
+  
+  "risk_mitigation": {
+    "R-4": {
+      "risk": "部署脚本权限不足",
+      "trigger": "permission denied",
+      "action": "自动切换rootless方案"
+    },
+    "R-5": {
+      "risk": "Mock数据冲突",
+      "trigger": "SQLite table exists",
+      "action": "清理表后重试"
+    },
+    "R-6": {
+      "risk": "Exporter端口占用",
+      "trigger": "bind: address already in use",
+      "action": "改用9102端口"
+    }
+  },
+  
+  "time_gates": {
+    "18h_checkpoint": {
+      "condition": "B-1和B-2必须完成",
+      "pass_action": "继续执行",
+      "fail_action": "发出红色警报，推迟Week-3启动24小时"
+    },
+    "36h_checkpoint": {
+      "condition": "测试通过率>=95%",
+      "pass_action": "准备进入Week-3",
+      "fail_action": "启动紧急修复流程"
+    },
+    "48h_final": {
+      "condition": "所有阻塞项resolved",
+      "pass_action": "自动更新project_stage=W3",
+      "fail_action": "生成问题分析报告"
+    }
+  },
+  
+  "automated_commands": {
+    "full_execution": "autogui run --script ./scripts/fix-deployment.sh && autogui run --cmd 'python3 ./scripts/inject-test-data.py' && autogui run --cmd 'python3 ./scripts/week2-test-runner.py --all' && git tag week2-e2e && git push origin week2-e2e",
+    "status_check": "python3 ./scripts/blocker-resolution-status.py",
+    "progress_update": "python3 ./scripts/phase-gate-executor.py --update-progress"
+  }
+}

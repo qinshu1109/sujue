@@ -1,0 +1,20 @@
+{
+  "request": {
+    "query": "统计去年销售额",
+    "context": {}
+  },
+  "response": {
+    "sql": "SELECT SUM(total_amount) as yearly_sales FROM orders WHERE strftime('%Y', order_date) = strftime('%Y', 'now', '-1 year')",
+    "result": [
+      {
+        "yearly_sales": 45678.9
+      }
+    ],
+    "confidence": 0.95,
+    "execution_time_ms": 4500,
+    "tokens_used": {
+      "input": 150,
+      "output": 50
+    }
+  }
+}

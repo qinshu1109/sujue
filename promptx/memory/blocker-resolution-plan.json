@@ -1,0 +1,152 @@
+{
+  "document_type": "blocker_resolution_plan",
+  "version": "1.0.0",
+  "created_date": "2025-06-16",
+  "author": "NuWa",
+  "purpose": "解决Phase-Gate中的3大阻塞项，48小时内满足Week-3前置条件",
+  
+  "blockers": {
+    "B-1": {
+      "name": "系统部署验证",
+      "description": "init-system.sh跨平台/权限差异；Pod网络未映射端口",
+      "impact": "无法启动集成测试",
+      "urgency": "high",
+      "status": "in_progress"
+    },
+    "B-2": {
+      "name": "验收测试执行",
+      "description": "自动化框架尚未在CI环境跑通；部分用例缺mock数据",
+      "impact": "阶段指标无法评估",
+      "urgency": "high",
+      "status": "pending"
+    },
+    "B-3": {
+      "name": "可观测性数据流",
+      "description": "Prometheus job抓不到PromptX MCP指标；Grafana面板未配置变量",
+      "impact": "难以监控性能&成本",
+      "urgency": "medium",
+      "status": "pending"
+    }
+  },
+  
+  "action_plan": [
+    {
+      "id": "2-1",
+      "action": "修正Podman compose网络端口 & volume权限",
+      "responsible_roles": ["NuWa", "FrontEndBot"],
+      "deadline_hours": 12,
+      "mcp_tools": ["autogui", "fs"],
+      "status": "assigned"
+    },
+    {
+      "id": "2-2",
+      "action": "更新init-system.sh：检测rootless/root两种场景",
+      "responsible_roles": ["Debugger"],
+      "deadline_hours": 12,
+      "mcp_tools": ["fs", "time"],
+      "status": "assigned"
+    },
+    {
+      "id": "2-3",
+      "action": "在staging运行脚本并生成运行日志",
+      "responsible_roles": ["NuWa"],
+      "deadline_hours": 18,
+      "mcp_tools": ["autogui", "memory"],
+      "status": "pending"
+    },
+    {
+      "id": "2-4",
+      "action": "修补week2-test-runner.py：注入mock seed数据",
+      "responsible_roles": ["SchemaSage"],
+      "deadline_hours": 18,
+      "mcp_tools": ["fs", "memory"],
+      "status": "assigned"
+    },
+    {
+      "id": "2-5",
+      "action": "配置GitHub Action phase-gate-ci.yml调用测试框架",
+      "responsible_roles": ["NuWa"],
+      "deadline_hours": 24,
+      "mcp_tools": ["git", "autoapprove"],
+      "status": "pending"
+    },
+    {
+      "id": "2-6",
+      "action": "Prometheus mcp-exporter Job添加端口9101；更新Grafana JSON",
+      "responsible_roles": ["MetricsWatcher"],
+      "deadline_hours": 36,
+      "mcp_tools": ["fs", "fetch"],
+      "status": "pending"
+    },
+    {
+      "id": "2-7",
+      "action": "运行全量T-01~T-07；生成JUnit & HTML报告",
+      "responsible_roles": ["NuWa"],
+      "deadline_hours": 42,
+      "mcp_tools": ["time", "memory"],
+      "status": "pending"
+    },
+    {
+      "id": "2-8",
+      "action": "自动写入project_stage = 'W3_in_progress'（若通过）",
+      "responsible_roles": ["NuWa"],
+      "deadline_hours": 48,
+      "mcp_tools": ["memory"],
+      "status": "pending"
+    }
+  ],
+  
+  "new_roles": {
+    "FrontEndBot": {
+      "description": "处理Podman网络/权限脚本；负责容器端口映射",
+      "trigger": "deploy_fix_required",
+      "tools": ["fs", "autogui"]
+    },
+    "CIOrchestrator": {
+      "description": "管理GitHub Action、生成测试报告",
+      "trigger": "ci_pipeline_run",
+      "tools": ["git", "autoapprove", "time"]
+    },
+    "ExporterGuru": {
+      "description": "定制Prometheus Exporter & Grafana Dashboards",
+      "trigger": "observability_gap",
+      "tools": ["fs", "fetch"]
+    }
+  },
+  
+  "success_criteria": {
+    "B-1": {
+      "criteria": "podman ps显示5个容器全healthy，端口8000/5432/9090可访问",
+      "verification": "podman ps --format json | jq '.[] | select(.State==\"running\") | .Names'"
+    },
+    "B-2": {
+      "criteria": "week2-test-runner.py在CI运行通过率≥95%",
+      "verification": "查看docs/reports/test-report.html"
+    },
+    "B-3": {
+      "criteria": "Grafana Dashboard显示数据；延迟&Token图表连续采样10min无空洞",
+      "verification": "curl http://localhost:3000/api/dashboards/uid/text2sql-overview"
+    }
+  },
+  
+  "risk_monitoring": {
+    "R-1": {
+      "risk": "部署脚本超时",
+      "metric": "init_duration",
+      "threshold": "300s",
+      "action": "Debugger再次介入"
+    },
+    "R-2": {
+      "risk": "测试失败率",
+      "metric": "test_fail_ratio",
+      "threshold": "10%",
+      "action": "CIOrchestrator生成修复任务"
+    },
+    "R-3": {
+      "risk": "Exporter报错",
+      "metric": "prometheus_job_status",
+      "threshold": "failed",
+      "action": "ExporterGuru修复"
+    }
+  }
+}

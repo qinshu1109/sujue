@@ -1,0 +1,7 @@
+{
+  "blocked_query": {
+    "sql": "DELETE FROM users",
+    "reason": "DELETE without WHERE clause",
+    "blocked_at": "2025-06-16T20:56:35.192460"
+  }
+}

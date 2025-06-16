@@ -1,0 +1,7 @@
+{
+  "cached_sql": {
+    "query": "统计去年销售额",
+    "sql": "SELECT SUM(total_amount) FROM orders WHERE YEAR(order_date) = YEAR(CURRENT_DATE) - 1",
+    "timestamp": "2025-06-16T20:56:35.192449"
+  }
+}

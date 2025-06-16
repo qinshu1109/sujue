@@ -1,0 +1,67 @@
+# SQLGuardian 白名单表配置
+# 女娲造物：知人善任，以德治表
+
+version: "1.0"
+last_updated: "2025-06-16T21:00:00Z"
+
+# 允许查询的表列表
+allowed_tables:
+  # 用户相关表
+  - users
+  - user_profiles  
+  - user_sessions
+  
+  # 产品相关表
+  - products
+  - categories
+  - product_reviews
+  - inventory
+  
+  # 订单相关表
+  - orders
+  - order_items
+  - payments
+  - shipping
+  
+  # 系统表（只读）
+  - system_logs
+  - audit_trail
+  - performance_metrics
+
+# 表级权限配置
+table_permissions:
+  users:
+    allowed_columns: ["id", "username", "email", "created_at", "status"]
+    blocked_columns: ["password", "salt", "secret_key"]
+    max_rows: 1000
+    
+  products:
+    allowed_columns: ["*"]
+    max_rows: 5000
+    
+  orders:
+    allowed_columns: ["*"]  
+    max_rows: 2000
+    
+  system_logs:
+    allowed_columns: ["timestamp", "level", "message", "user_id"]
+    max_rows: 500
+
+# 查询限制
+query_limits:
+  max_joins: 5
+  max_subqueries: 3
+  max_execution_time_seconds: 30
+  max_result_rows: 10000
+
+# 安全规则
+security_rules:
+  block_wildcards: false  # 是否阻止 SELECT *
+  require_where_clause: false  # 是否强制WHERE条件
+  block_functions: ["SLEEP", "BENCHMARK", "LOAD_FILE"]
+  
+# 监控配置  
+monitoring:
+  log_blocked_queries: true
+  alert_on_suspicious_patterns: true
+  daily_report: true

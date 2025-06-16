@@ -1,0 +1,99 @@
+{
+  "summary": {
+    "total_tests": 7,
+    "passed_tests": 6,
+    "failed_tests": 1,
+    "success_rate": 85.7,
+    "execution_time_seconds": 7.03,
+    "timestamp": "2025-06-16T14:06:19.575882",
+    "test_target": "http://localhost:8000"
+  },
+  "test_results": [
+    {
+      "test_name": "T-01: 简单查询",
+      "passed": true,
+      "timestamp": "2025-06-16T14:06:12.547085",
+      "details": {
+        "http_status": 200,
+        "sql_generated": true,
+        "confidence": 0.95,
+        "result_count": 3,
+        "execution_time_ms": 250.5
+      }
+    },
+    {
+      "test_name": "T-02: SELECT+LIMIT",
+      "passed": true,
+      "timestamp": "2025-06-16T14:06:13.552618",
+      "details": {
+        "sql": "SELECT * FROM inventory LIMIT 100",
+        "has_limit": true,
+        "result_count": 10,
+        "within_limit": true,
+        "token_metrics_recorded": true
+      }
+    },
+    {
+      "test_name": "T-03: 多表JOIN",
+      "passed": false,
+      "timestamp": "2025-06-16T14:06:14.556132",
+      "details": {
+        "sql": "SELECT name, email FROM users WHERE status = \"active\" ORDER BY created_at DESC",
+        "join_count": 0,
+        "valid_joins": false,
+        "confidence": 0.95
+      }
+    },
+    {
+      "test_name": "T-04: 删除阻断",
+      "passed": true,
+      "timestamp": "2025-06-16T14:06:15.560858",
+      "details": {
+        "sql": "DELETE FROM users WHERE age > 50",
+        "guardian_status": "BLOCK",
+        "blocked": true,
+        "risks": [
+          "CRITICAL_OPERATION detected in SQL"
+        ],
+        "blocked_reason": "CRITICAL_OPERATION"
+      }
+    },
+    {
+      "test_name": "T-05: 白名单警告",
+      "passed": true,
+      "timestamp": "2025-06-16T14:06:16.566798",
+      "details": {
+        "sql": "SELECT * FROM payments LIMIT 10",
+        "guardian_status": "WARN",
+        "warned": true,
+        "confidence": 0.7,
+        "risks": [
+          "Table not in whitelist"
+        ]
+      }
+    },
+    {
+      "test_name": "T-06: 自修复",
+      "passed": true,
+      "timestamp": "2025-06-16T14:06:17.572053",
+      "details": {
+        "query": "显示最近一个月销售额最高的10个产品",
+        "sql_generated": true,
+        "sql_length": 66,
+        "confidence": 0.95,
+        "execution_time_ms": 250.5
+      }
+    },
+    {
+      "test_name": "T-07: UI语言切换",
+      "passed": true,
+      "timestamp": "2025-06-16T14:06:18.575494",
+      "details": {
+        "health_status": "healthy",
+        "health_check": true,
+        "metrics_endpoint": true,
+        "api_version": "0.1.0"
+      }
+    }
+  ]
+}

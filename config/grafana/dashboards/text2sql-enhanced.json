@@ -1,0 +1,97 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "text2sql-overview",
+    "title": "Text2SQL Enhanced Monitoring",
+    "tags": ["text2sql", "nuwa", "promptx"],
+    "timezone": "browser",
+    "schemaVersion": 30,
+    "version": 1,
+    "panels": [
+      {
+        "id": 1,
+        "title": "请求速率",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(text2sql_generation_total[5m])",
+            "legendFormat": "生成速率"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "成功率",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(text2sql_execution_total{status='success'}[5m]) / rate(text2sql_execution_total[5m]) * 100",
+            "legendFormat": "成功率%"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "响应时间P95",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(text2sql_response_seconds_bucket[5m]))",
+            "legendFormat": "P95延迟"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Token使用量",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(text2sql_tokens_total[5m])) by (type)",
+            "legendFormat": "{{type}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "PromptX记忆项",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "promptx_memory_items_total",
+            "legendFormat": "记忆项总数"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "角色切换次数",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "increase(promptx_role_switches_total[1h])",
+            "legendFormat": "{{from_role}}→{{to_role}}"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 16}
+      },
+      {
+        "id": 7,
+        "title": "测试状态",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "promptx_test_status",
+            "format": "table"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 12, "x": 12, "y": 16}
+      }
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+# 测试依赖
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-html==4.1.1
+pytest-timeout==2.2.0
+
+# Mock和测试工具
+pytest-mock==3.12.0
+responses==0.24.1
+faker==20.1.0
+
+# 数据库
+sqlalchemy==2.0.23
+sqlite3
+
+# 报告生成
+jinja2==3.1.2
+matplotlib==3.8.2

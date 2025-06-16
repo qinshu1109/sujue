@@ -1,0 +1,17 @@
+{
+  "summary": {
+    "检查文件数": 6,
+    "覆盖率": "95.0%",
+    "硬编码问题": 0,
+    "缺失Hook": 0
+  },
+  "details": {
+    "hardcodedStrings": [],
+    "missingKeys": []
+  },
+  "recommendations": [
+    "✅ 国际化覆盖率优秀！建议继续保持"
+  ],
+  "generatedAt": "2025-06-16T14:10:26.845Z",
+  "passThreshold": "✅ PASS"
+}

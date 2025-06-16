@@ -1,0 +1,18 @@
+{
+  "use_mock_data": true,
+  "test_db_path": "/home/qinshu/text2sql-mvp0/tests/test_data.db",
+  "mock_data_path": "/home/qinshu/text2sql-mvp0/tests/mock_data",
+  "api_endpoints": {
+    "text2sql": "http://localhost:5000/api/text2sql",
+    "validate": "http://localhost:5000/api/sql/validate"
+  },
+  "mock_mode_overrides": {
+    "T-01": "use_test_db",
+    "T-02": "use_cached_response",
+    "T-03": "simulate_block",
+    "T-04": "simulate_error_and_fix",
+    "T-05": "simulate_schema_change",
+    "T-06": "test_persistence",
+    "T-07": "simulate_load"
+  }
+}

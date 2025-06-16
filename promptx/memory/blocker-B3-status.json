@@ -1,0 +1,8 @@
+{
+  "blocker": "B-3",
+  "status": "resolved",
+  "resolved_at": "2025-06-16T12:56:35Z",
+  "resolved_by": "ExporterGuru",
+  "grafana_updated": true,
+  "exporter_port": 9101
+}

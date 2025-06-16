@@ -1,0 +1,126 @@
+version: '3.8'
+
+networks:
+  text2sql-net:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  chroma-data:
+  prometheus-data:
+  grafana-data:
+
+services:
+  # 数据库服务
+  postgres:
+    image: postgres:15-alpine
+    container_name: text2sql-db
+    environment:
+      POSTGRES_USER: text2sql
+      POSTGRES_PASSWORD: secure_password_here
+      POSTGRES_DB: text2sql_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./config/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - text2sql-net
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U text2sql"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 向量数据库
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: text2sql-vec
+    volumes:
+      - chroma-data:/chroma/chroma
+    networks:
+      - text2sql-net
+    ports:
+      - "8000:8000"
+    environment:
+      IS_PERSISTENT: "TRUE"
+      PERSIST_DIRECTORY: "/chroma/chroma"
+
+  # LLM代理服务
+  llm-proxy:
+    build:
+      context: ./docker/llm-proxy
+      dockerfile: Dockerfile
+    container_name: text2sql-llm-proxy
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      RATE_LIMIT_RPM: 60
+      RATE_LIMIT_TPM: 100000
+    networks:
+      - text2sql-net
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config/llm-proxy:/app/config
+
+  # DB-GPT主服务
+  dbgpt-web:
+    build:
+      context: ./db-gpt
+      dockerfile: Dockerfile
+    container_name: text2sql-app
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: text2sql
+      DB_PASSWORD: secure_password_here
+      DB_NAME: text2sql_db
+      VECTOR_DB_URL: http://chromadb:8000
+      LLM_PROXY_URL: http://llm-proxy:8080
+    networks:
+      - text2sql-net
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+      llm-proxy:
+        condition: service_started
+    volumes:
+      - ./config/dbgpt:/app/config
+      - ./promptx:/app/promptx
+
+  # Prometheus监控
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: text2sql-prometheus
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - text2sql-net
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+
+  # Grafana可视化
+  grafana:
+    image: grafana/grafana:latest
+    container_name: text2sql-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./config/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - text2sql-net
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
